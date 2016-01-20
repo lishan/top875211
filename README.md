@@ -9,3 +9,5 @@ Use node.js + mongodb as technical stack.
 +   Change config.js to do config, like mongodb address.
 +   Run `node converter.js <XML FILE>` to do convert operation, for example `node converter.js sample/RU50-209-2013-913051-1739672.xml`, support multi games in one event feed. See sample/RU50-209-2013-913051-1739672.xml for details.
 +   Run `node app.js` to start rest server. Get http://localhost:3000/api/match/913051 will return json. See Restapi.PNG.
+
+[https://github.com/lishan/top875211](https://github.com/lishan/top875211) is source code.
