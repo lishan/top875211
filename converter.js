@@ -17,22 +17,27 @@ fs.statSync(process.argv[2], function(err, stats){
 });
 
 mongoose.connect(config['db']);
+console.log("Mongo connection has been created!");
 
 fs.readFile(process.argv[2], function(err, data) {
     parser.parseString(data, function (err, result) {
         var obj = {};
-        for(var prop in result["RU50_EventFeed"]["Game"][0]["$"]){
-            obj[prop] = result["RU50_EventFeed"]["Game"][0]["$"][prop];
+        for(var i = 0; i < result[config['rootNode']]["Game"].length; i++){
+            var element = result[config['rootNode']]["Game"][i];
+            for(var prop in element["$"]){
+                obj[prop] = element["$"][prop];
+            }
+            for(var prop in element["Event"][0]["$"]){
+                obj[prop] = element["Event"][0]["$"][prop];
+            }
+            for(var index in element["Event"][0]["Qualifiers"]){
+                var num = parseInt(index) + 1;
+                obj["qualifier_" + num] = JSON.stringify(element["Event"][0]["Qualifiers"][index]["$"]);
+            }
+            var xml = new Fact(obj);
+            xml.save();
         }
-        for(var prop in result["RU50_EventFeed"]["Game"][0]["Event"][0]["$"]){
-            obj[prop] = result["RU50_EventFeed"]["Game"][0]["Event"][0]["$"][prop];
-        }
-        for(var index in result["RU50_EventFeed"]["Game"][0]["Event"][0]["Qualifiers"]){
-            var num = parseInt(index) + 1;
-            obj["qualifier_" + num] = JSON.stringify(result["RU50_EventFeed"]["Game"][0]["Event"][0]["Qualifiers"][index]["$"]);
-        }
-        var xml = new Fact(obj);
-        xml.save();
         mongoose.connection.close();
+        console.log("Disconnected!");
     });
 });
